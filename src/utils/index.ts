@@ -6,6 +6,7 @@ export * from './css';
 export * from './debug';
 export * from './define';
 export * from './entries';
+export * from './full-screen';
 export * from './get-forward';
 export * from './get-matrix';
 export * from './inner';

@@ -1,8 +1,16 @@
-@use "sass:math" as math;
+@use 'sass:math' as math;
 
 html,
 body {
   height: 100vh;
+  max-height: 100vh;
+  overscroll-behavior: none; /* Evita o efeito de overscroll */
+  touch-action: none; /* Bloqueia gestos padrão */
+  user-select: none; /* Impede seleção de texto */
+  overflow: hidden; /* Impede rolagem */
+  width: 100%;
+  height: 100%;
+  position: fixed;
 }
 
 body {

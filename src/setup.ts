@@ -1,8 +1,7 @@
-import {loadSkateboard, loadSkateboardTricks, Skateboard} from './skateboard'
+import {SkateboardSwipe, SkateboardTricks} from './types'
 import {loadMediaPlayer, MediaPlayer} from './media'
 import {createToken, load, set} from './utils'
 import {obstaclesFactory} from './providers'
-import {SkateboardTricks} from './types'
 import {Grass, Ground} from './scenario'
 import {Obstacle} from './obstacles'
 import {AudioListener} from 'three'
@@ -10,6 +9,13 @@ import {Material} from 'cannon-es'
 import {Player} from './player'
 import {env} from './envs/env'
 import {Stage} from './stage'
+import {
+  Skateboard,
+  loadSkateboard,
+  loadSkateboardSwipe,
+  loadSkateboardTricks,
+} from './skateboard'
+import {Swiper} from './core'
 
 export const MATERIALS = createToken('materials.token')
 
@@ -21,6 +27,10 @@ export const MEDIA_PLAYER = createToken<MediaPlayer>('media-player.token')
 
 export const SKATEBOARD_TRICKS = createToken<SkateboardTricks>(
   'skateboard-tricks.token'
+)
+
+export const SKATEBOARD_SWIPES = createToken<SkateboardSwipe>(
+  'skateboard-swipes.token'
 )
 
 export const ENV = createToken<Env>('env.token')
@@ -40,6 +50,8 @@ export const OBSTACLES = createToken<{
 }>('obstacles.token')
 
 export const PLAYER = createToken<Player>('player.token')
+
+export const SWIPER = createToken<Swiper>('swiper.token')
 
 export const STAGE = createToken<Stage>('stage.token')
 
@@ -96,6 +108,10 @@ export const providers = async () => {
         use: loadSkateboardTricks,
       },
       {
+        ref: SKATEBOARD_SWIPES,
+        use: loadSkateboardSwipe,
+      },
+      {
         ref: MEDIA_PLAYER,
         use: loadMediaPlayer,
         dep: [MEDIA_ITEMS, ROOT_ELEMENT],
@@ -103,6 +119,10 @@ export const providers = async () => {
       {
         ref: AUDIO_LISTENER,
         use: AudioListener,
+      },
+      {
+        ref: SWIPER,
+        use: Swiper,
       },
       {
         ref: OBSTACLES,
