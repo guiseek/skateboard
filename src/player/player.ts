@@ -22,6 +22,7 @@ export class Player {
     this.actions.on('r', (state) => {
       if (state) this.skateboard.reset()
     })
+
   }
 
   addSpawnPoint(object: Object3D) {

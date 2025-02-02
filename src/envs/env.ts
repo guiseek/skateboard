@@ -7,12 +7,15 @@ export const env: Env = {
     restitution: 0.1,
     equation: {
       friction: {
-        stiffness: 1e7,
+        // stiffness: 1e7,
+        stiffness: 5e7,
         relaxation: 4,
       },
       contact: {
-        stiffness: 1e8,
-        relaxation: 3,
+        // stiffness: 1e8,
+        stiffness: 5e7,
+        // relaxation: 3,
+        relaxation: 4,
       },
     },
   },

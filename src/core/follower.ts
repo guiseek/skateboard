@@ -6,7 +6,7 @@ export class Follower {
   #target?: Object3D
 
   #offset = {
-    back: new Vector3(0, 4, -16),
+    back: new Vector3(0, 6, -12),
     front: new Vector3(0, 4, 24),
   }
 

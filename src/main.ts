@@ -25,6 +25,8 @@ providers().then(() => {
 
   stage.add(obstacle.grass)
 
+  stage.add(obstacle.halfpipe)
+
   stage.add(obstacle.banks)
 
   stage.add(obstacle.banksGap)

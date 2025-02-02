@@ -2,6 +2,7 @@ import {Material} from 'cannon-es'
 
 export interface ObstacleMaterial {
   angleIron: Material
+  coping: Material
   rail: Material
 }
 

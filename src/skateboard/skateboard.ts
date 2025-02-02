@@ -1,6 +1,5 @@
 import {SkateboardAction, SkateboardActions} from './skateboard-actions'
 import {AudioListener, Group, Mesh, Object3D} from 'three'
-import {Entity, SkateboardMaterial} from '../interfaces'
 import {Body, RaycastVehicle, Vec3} from 'cannon-es'
 import {SkateboardSound} from './skateboard-sound'
 import {SkateboardParts} from './skateboard-parts'
@@ -8,6 +7,11 @@ import {SkateboardTrick} from './skateboard-trick'
 import {SkateboardWheel} from './skateboard-wheel'
 import {cannon, three} from '../utils'
 import {Loader} from '../core'
+import {
+  Entity,
+  Materials,
+  CollisionEvent,
+} from '../interfaces'
 
 export class Skateboard implements Entity {
   parts: SkateboardParts
@@ -27,7 +31,7 @@ export class Skateboard implements Entity {
   constructor(
     object: Object3D,
     readonly sound: SkateboardSound,
-    readonly materials: SkateboardMaterial
+    readonly materials: Materials
   ) {
     this.parts = new SkateboardParts(object)
     this.actions = new SkateboardActions()
@@ -40,7 +44,8 @@ export class Skateboard implements Entity {
       /* z */ indexForwardAxis: 2,
     })
 
-    this.body.position.set(45, 55, 353)
+    // this.body.position.set(45, 55, 353)
+    this.body.position.set(-220, 10, -246)
 
     this.body.quaternion.set(
       this.parts.deckCollision.quaternion.x,
@@ -62,7 +67,7 @@ export class Skateboard implements Entity {
         this.parts.deckCollision.position.z
       )
       const shape = cannon.mapper.toBox(geometry)
-      shape.material = this.materials.slide
+      shape.material = this.materials.skateboard.slide
       this.body.addShape(shape, offset)
     }
 
@@ -77,7 +82,7 @@ export class Skateboard implements Entity {
         this.parts.deckNoseCollision.position.z
       )
       const shape = cannon.mapper.toBox(geometry)
-      shape.material = this.materials.slide
+      shape.material = this.materials.skateboard.slide
       this.body.addShape(shape, offset)
     }
 
@@ -92,7 +97,7 @@ export class Skateboard implements Entity {
         this.parts.deckTailCollision.position.z
       )
       const shape = cannon.mapper.toBox(geometry)
-      shape.material = this.materials.slide
+      shape.material = this.materials.skateboard.slide
       this.body.addShape(shape, offset)
     }
 
@@ -107,7 +112,7 @@ export class Skateboard implements Entity {
         this.parts.truckFrontCollision.position.z
       )
       const shape = cannon.mapper.toBox(geometry)
-      shape.material = this.materials.grind
+      shape.material = this.materials.skateboard.grind
       this.body.addShape(shape, offset)
     }
 
@@ -122,7 +127,7 @@ export class Skateboard implements Entity {
         this.parts.truckBackCollision.position.z
       )
       const shape = cannon.mapper.toBox(geometry)
-      shape.material = this.materials.grind
+      shape.material = this.materials.skateboard.grind
       this.body.addShape(shape, offset)
     }
 
@@ -153,6 +158,14 @@ export class Skateboard implements Entity {
     this.body.addEventListener('collide', this.#onCollide)
 
     this.#listen()
+  }
+
+  #onCollide = (event: CollisionEvent) => {
+    console.log(event)
+
+    if (!this.sound.collision.isPlaying) {
+      this.sound.collision.play()
+    }
   }
 
   setPosition(x: number, y: number, z: number) {
@@ -199,14 +212,6 @@ export class Skateboard implements Entity {
       object.position.copy(wheel.worldTransform.position)
       object.quaternion.copy(wheel.worldTransform.quaternion)
     })
-  }
-
-  #onCollide = () => {
-    // console.log(event.contact.)
-
-    if (!this.sound.collision.isPlaying) {
-      this.sound.collision.play()
-    }
   }
 
   #listen() {
@@ -286,7 +291,7 @@ export class Skateboard implements Entity {
 
 export const loadSkateboard = async (
   listener: AudioListener,
-  materials: SkateboardMaterial
+  materials: Materials
 ) => {
   const loader = Loader.getInstance()
 

@@ -1,7 +1,7 @@
 import {Scene, Clock, DirectionalLight, HemisphereLight} from 'three'
 import {Camera, Controls, Follower, Renderer} from './core'
-import {ContactMaterial, Material, World} from 'cannon-es'
 import {Entity, Materials, Updatable} from './interfaces'
+import {ContactMaterial, World} from 'cannon-es'
 // import CannonDebugger from 'cannon-es-debugger'
 import {Skateboard} from './skateboard'
 import {Player} from './player'
@@ -22,22 +22,12 @@ export class Stage {
 
   controls: Follower | Controls
 
-  materials: Materials = {
-    obstacle: {
-      angleIron: new Material({friction: 0.02, restitution: 0.01}),
-      rail: new Material({friction: 0.01, restitution: 0.02}),
-    },
-    skateboard: {
-      slide: new Material({friction: 0.01, restitution: 0.0}),
-      grind: new Material({friction: 0.02, restitution: 0.0}),
-    },
-  }
-
   // debugger: ReturnType<typeof CannonDebugger>
 
   constructor(
     container: HTMLElement,
     private env: Env,
+    private materials: Materials,
     private skateboard: Skateboard,
     private player: Player
   ) {
@@ -73,30 +63,32 @@ export class Stage {
 
     this.controls = new Follower(this.camera)
 
+    this.skateboard.body.collisionResponse = true
+
     const skateGringObstacleAngleIronContact = new ContactMaterial(
-      this.materials.skateboard.grind,
       this.materials.obstacle.angleIron,
+      this.materials.skateboard.grind,
       {friction: 0.1, restitution: 0.0}
     )
     this.world.addContactMaterial(skateGringObstacleAngleIronContact)
 
     const skateGringObstacleRailContact = new ContactMaterial(
-      this.materials.skateboard.grind,
       this.materials.obstacle.rail,
+      this.materials.skateboard.grind,
       {friction: 0.1, restitution: 0.0}
     )
     this.world.addContactMaterial(skateGringObstacleRailContact)
 
     const skateSlideObstacleRailContact = new ContactMaterial(
-      this.materials.skateboard.slide,
       this.materials.obstacle.rail,
+      this.materials.skateboard.slide,
       {friction: 0.1, restitution: 0.0}
     )
     this.world.addContactMaterial(skateSlideObstacleRailContact)
 
     const skateSlideObstacleAngleIronContact = new ContactMaterial(
-      this.materials.skateboard.slide,
       this.materials.obstacle.rail,
+      this.materials.skateboard.slide,
       {friction: 0.1, restitution: 0.0}
     )
     this.world.addContactMaterial(skateSlideObstacleAngleIronContact)
@@ -106,6 +98,17 @@ export class Stage {
     if (this.controls instanceof Follower) {
       this.controls.setTarget(skateboard.object)
     }
+
+    player.actions.on('v', (state) => {
+      if (state) {
+        if (this.controls instanceof Follower) {
+          this.controls = new Controls(this.camera, this.renderer)
+        } else {
+          this.controls = new Follower(this.camera)
+          this.controls.setTarget(skateboard.object)
+        }
+      }
+    })
 
     onresize = () => {
       this.camera.aspect = innerWidth / innerHeight

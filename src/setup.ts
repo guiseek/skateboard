@@ -44,6 +44,7 @@ export const OBSTACLES = createToken<{
   grass: Grass
   quarters: Obstacle[]
   banks: Obstacle
+  halfpipe: Obstacle
   banksGap: Obstacle
   funbox: Obstacle
   funboxBig: Obstacle
@@ -69,13 +70,23 @@ export const providers = async () => {
       {
         ref: MATERIALS,
         use: {
+          // obstacle: {
+          //   angleIron: new Material({friction: 0.02, restitution: 0.01}),
+          //   rail: new Material({friction: 0.01, restitution: 0.02}),
+          //   coping: new Material({friction: 0.01, restitution: 0.0}),
+          // },
+          // skateboard: {
+          //   slide: new Material({friction: 0.01, restitution: 0.0}),
+          //   grind: new Material({friction: 0.02, restitution: 0.0}),
+          // },
           obstacle: {
-            angleIron: new Material({friction: 0.02, restitution: 0.01}),
-            rail: new Material({friction: 0.01, restitution: 0.02}),
+            angleIron: new Material('obstacle.angleIron'),
+            rail: new Material('obstacle.rail'),
+            coping: new Material('obstacle.coping'),
           },
           skateboard: {
-            slide: new Material({friction: 0.01, restitution: 0.0}),
-            grind: new Material({friction: 0.02, restitution: 0.0}),
+            slide: new Material('skateboard.slide'),
+            grind: new Material('skateboard.grind'),
           },
         },
       },
@@ -125,14 +136,14 @@ export const providers = async () => {
         use: Swiper,
       },
       {
-        ref: OBSTACLES,
-        use: obstaclesFactory,
-        dep: [MATERIALS],
-      },
-      {
         ref: SKATEBOARD,
         use: loadSkateboard,
         dep: [AUDIO_LISTENER, MATERIALS],
+      },
+      {
+        ref: OBSTACLES,
+        use: obstaclesFactory,
+        dep: [SKATEBOARD, MATERIALS],
       },
       {
         ref: PLAYER,
@@ -142,7 +153,7 @@ export const providers = async () => {
       {
         ref: STAGE,
         use: Stage,
-        dep: [ROOT_ELEMENT, ENV, SKATEBOARD, PLAYER],
+        dep: [ROOT_ELEMENT, ENV, MATERIALS, SKATEBOARD, PLAYER],
       }
     )
   )

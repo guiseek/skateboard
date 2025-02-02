@@ -38,6 +38,8 @@ export abstract class Actions<T extends string> {
 
   #onKey = (state: boolean) => {
     return (event: KeyboardEvent) => {
+      event.preventDefault()
+      
       const action = this.#normalizeAction(event.code)
       if (this.#isAction(action)) {
         const meta = this.#getMeta(event)

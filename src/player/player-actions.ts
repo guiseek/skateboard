@@ -4,6 +4,7 @@ export type PlayerAction =
   | 'enter'
   | 'p'
   | 'r'
+  | 'v'
   | '1'
   | '2'
   | '3'
@@ -17,6 +18,7 @@ export class PlayerActions extends Actions<PlayerAction> {
     enter: false,
     p: false,
     r: false,
+    v: false,
     1: false,
     2: false,
     3: false,
