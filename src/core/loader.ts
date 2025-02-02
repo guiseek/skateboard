@@ -1,5 +1,5 @@
 import {DRACOLoader, GLTFLoader, RGBELoader} from 'three/examples/jsm/Addons.js'
-import {AudioLoader} from 'three'
+import {AudioLoader, TextureLoader} from 'three'
 
 export class Loader {
   private static instance: Loader
@@ -7,6 +7,8 @@ export class Loader {
   gltf: GLTFLoader
 
   rgbe: RGBELoader
+  
+  texture: TextureLoader
 
   audio: AudioLoader
 
@@ -21,6 +23,9 @@ export class Loader {
   private constructor() {
     this.rgbe = new RGBELoader()
     this.rgbe.setPath('envs/')
+
+    this.texture = new TextureLoader()
+    this.texture.setPath('textures/')
 
     this.audio = new AudioLoader()
     this.audio.setPath('sounds/')

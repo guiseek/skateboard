@@ -12,6 +12,8 @@ export class MediaPlayer extends CustomElement {
 
   next: MediaButton
 
+  shuffle: MediaButton
+
   constructor(public items: MediaItem[]) {
     super()
 
@@ -19,6 +21,8 @@ export class MediaPlayer extends CustomElement {
 
     this.prev = new MediaButton('prev')
     this.next = new MediaButton('next')
+    this.shuffle = new MediaButton('shuffle')
+    this.shuffle.classList.add('off')
 
     this.audio.controls = true
   }
@@ -42,6 +46,7 @@ export class MediaPlayer extends CustomElement {
 
       :host(:active),
       :host(:focus),
+      :host(:focus-within),
       :host(:hover) {
         opacity: 1;
       }
@@ -53,9 +58,75 @@ export class MediaPlayer extends CustomElement {
         cursor: pointer;
         border: none;
       }
+      :host button.off {
+        opacity: 0.6;
+      }
+
+      :host [data-tooltip] {
+        position: relative;
+      }
+      :host [data-tooltip]:hover:before {
+        content: attr(data-tooltip);
+        font-size: 14px;
+        text-align: center;
+        position: absolute;
+        display: block;
+        left: 50%;
+        min-width: 100px;
+        max-width: 200px;
+        bottom: calc(100% + 10px);
+        transform: translate(-50%);
+        animation: fade-in 0.3s ease;
+        background: #272727;
+        border-radius: 4px;
+        padding: 10px;
+        color: #fff;
+        z-index: 1;
+      }
+      :host [data-tooltip]:hover:after {
+        content: '';
+        position: absolute;
+        display: block;
+        left: 50%;
+        width: 0;
+        height: 0;
+        bottom: calc(100% + 6px);
+        margin-left: -3px;
+        border: 1px solid black;
+        border-color: rgb(39, 39, 39) transparent transparent transparent;
+        border-width: 4px 6px 0;
+        animation: fade-in 0.3s ease;
+        z-index: 1;
+      }
+      :host [data-tooltip][tooltip-position='bottom']:hover:before {
+        bottom: auto;
+        top: calc(100% + 10px);
+      }
+      :host [data-tooltip][tooltip-position='bottom']:hover:after {
+        bottom: auto;
+        top: calc(100% + 6px);
+        border-color: transparent transparent rgb(39, 39, 39);
+        border-width: 0 6px 4px;
+      }
+
+      @keyframes fade-in {
+        0% {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
     `
 
-    this.shadow.append(style, this.prev, this.audio, this.next, this.playlist)
+    this.shadow.append(
+      style,
+      this.audio,
+      this.prev,
+      this.next,
+      this.shuffle,
+      this.playlist
+    )
 
     this.prev.onclick = () => {
       this.playlist.prev()
@@ -63,6 +134,11 @@ export class MediaPlayer extends CustomElement {
 
     this.next.onclick = () => {
       this.playlist.next()
+    }
+
+    this.shuffle.onclick = () => {
+      this.playlist.shuffle()
+      this.shuffle.classList.toggle('off')
     }
 
     this.audio.onended = () => {
@@ -80,4 +156,14 @@ export class MediaPlayer extends CustomElement {
 
     this.audio.src = this.playlist.current.value
   }
+}
+
+export const loadMediaPlayer = (items: MediaItem[], root: HTMLElement) => {
+  const media = new MediaPlayer(items)
+
+  if (!document.body.contains(media)) {
+    document.body.insertBefore(media, root)
+  }
+
+  return media
 }

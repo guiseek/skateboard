@@ -3,13 +3,13 @@ import {Parts} from '../core'
 
 export type SkateboardPart =
   | 'DeckParent'
-  | 'DeckCollision'
-  | 'DeckNoseCollision'
-  | 'DeckTailCollision'
+  | 'DeckCollisionSlide'
+  | 'DeckNoseCollisionSlide'
+  | 'DeckTailCollisionSlide'
   | 'TruckFrontParent'
-  | 'TruckFrontCollision'
+  | 'TruckFrontCollisionGrind'
   | 'TruckBackParent'
-  | 'TruckBackCollision'
+  | 'TruckBackCollisionGrind'
   | 'WheelFrontLeftParent'
   | 'WheelFrontLeftCollision'
   | 'WheelFrontRightParent'
@@ -42,15 +42,15 @@ export class SkateboardParts extends Parts<SkateboardPart> {
 
   constructor(object: Object3D) {
     super(object)
-
+    
     this.deckParent = this.getPart('DeckParent')
-    this.deckCollision = this.getPart('DeckCollision')
-    this.deckNoseCollision = this.getPart('DeckNoseCollision')
-    this.deckTailCollision = this.getPart('DeckTailCollision')
+    this.deckCollision = this.getPart('DeckCollisionSlide')
+    this.deckNoseCollision = this.getPart('DeckNoseCollisionSlide')
+    this.deckTailCollision = this.getPart('DeckTailCollisionSlide')
     this.truckFrontParent = this.getPart('TruckFrontParent')
-    this.truckFrontCollision = this.getPart('TruckFrontCollision')
+    this.truckFrontCollision = this.getPart('TruckFrontCollisionGrind')
     this.truckBackParent = this.getPart('TruckBackParent')
-    this.truckBackCollision = this.getPart('TruckBackCollision')
+    this.truckBackCollision = this.getPart('TruckBackCollisionGrind')
 
     this.wheelFrontLeftCollision = this.getPart('WheelFrontLeftCollision')
     this.wheelFrontLeftParent = this.getPart('WheelFrontLeftParent')

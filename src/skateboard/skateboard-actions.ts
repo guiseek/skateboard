@@ -4,18 +4,18 @@ import {Actions} from '../core'
 export type SkateboardAction =
   | Direction
   | 'space'
-  | 'shiftleft'
   | 's'
   | 'q'
+  // | 'w'
   | 'e'
   | 'a'
   | 'd'
   | 'z'
   | 'c'
   | 'x'
-  | 'g'
+  // | 'g'
   | 'f'
-  | 'b'
+  // | 'b'
 
 export class SkateboardActions extends Actions<SkateboardAction> {
   state = {
@@ -24,17 +24,17 @@ export class SkateboardActions extends Actions<SkateboardAction> {
     down: false,
     left: false,
     space: false,
-    shiftleft: false,
     s: false,
     q: false,
+    // w: false,
     e: false,
     a: false,
     d: false,
     z: false,
     c: false,
     x: false,
-    g: false,
+    // g: false,
     f: false,
-    b: false,
+    // b: false,
   }
 }

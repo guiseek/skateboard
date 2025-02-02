@@ -1,14 +1,15 @@
 import {SkateboardAction, SkateboardActions} from './skateboard-actions'
+import {AudioListener, Group, Mesh, Object3D} from 'three'
+import {Entity, SkateboardMaterial} from '../interfaces'
 import {Body, RaycastVehicle, Vec3} from 'cannon-es'
 import {SkateboardSound} from './skateboard-sound'
 import {SkateboardParts} from './skateboard-parts'
 import {SkateboardTrick} from './skateboard-trick'
 import {SkateboardWheel} from './skateboard-wheel'
-import {AudioListener, Group, Mesh, Object3D} from 'three'
 import {cannon, three} from '../utils'
 import {Loader} from '../core'
 
-export class Skateboard {
+export class Skateboard implements Entity {
   parts: SkateboardParts
 
   body: Body
@@ -21,12 +22,16 @@ export class Skateboard {
 
   object: Group
 
-  settings = {maxforce: 30, maxSteerVal: 0.2, brakeForce: 4}
+  settings = {maxforce: 30, maxSteerVal: 0.15, brakeForce: 4}
 
-  constructor(object: Object3D, readonly sound: SkateboardSound) {
+  constructor(
+    object: Object3D,
+    readonly sound: SkateboardSound,
+    readonly materials: SkateboardMaterial
+  ) {
     this.parts = new SkateboardParts(object)
     this.actions = new SkateboardActions()
-    this.body = new Body({mass: 10})
+    this.body = new Body({mass: 14})
 
     this.raycast = new RaycastVehicle({
       chassisBody: this.body,
@@ -35,11 +40,7 @@ export class Skateboard {
       /* z */ indexForwardAxis: 2,
     })
 
-    this.body.position.set(
-      this.parts.deckCollision.position.x,
-      this.parts.deckCollision.position.y + 22,
-      this.parts.deckCollision.position.z
-    )
+    this.body.position.set(45, 55, 353)
 
     this.body.quaternion.set(
       this.parts.deckCollision.quaternion.x,
@@ -47,6 +48,8 @@ export class Skateboard {
       this.parts.deckCollision.quaternion.z,
       this.parts.deckCollision.quaternion.w
     )
+
+    this.body.angularVelocity.set(0, 1, -0.4)
 
     {
       /* Shape */
@@ -58,7 +61,9 @@ export class Skateboard {
         this.parts.deckCollision.position.y,
         this.parts.deckCollision.position.z
       )
-      this.body.addShape(cannon.mapper.toBox(geometry), offset)
+      const shape = cannon.mapper.toBox(geometry)
+      shape.material = this.materials.slide
+      this.body.addShape(shape, offset)
     }
 
     {
@@ -71,7 +76,9 @@ export class Skateboard {
         this.parts.deckNoseCollision.position.y,
         this.parts.deckNoseCollision.position.z
       )
-      this.body.addShape(cannon.mapper.toBox(geometry), offset)
+      const shape = cannon.mapper.toBox(geometry)
+      shape.material = this.materials.slide
+      this.body.addShape(shape, offset)
     }
 
     {
@@ -84,7 +91,9 @@ export class Skateboard {
         this.parts.deckTailCollision.position.y,
         this.parts.deckTailCollision.position.z
       )
-      this.body.addShape(cannon.mapper.toBox(geometry), offset)
+      const shape = cannon.mapper.toBox(geometry)
+      shape.material = this.materials.slide
+      this.body.addShape(shape, offset)
     }
 
     {
@@ -97,7 +106,9 @@ export class Skateboard {
         this.parts.truckFrontCollision.position.y,
         this.parts.truckFrontCollision.position.z
       )
-      this.body.addShape(cannon.mapper.toBox(geometry), offset)
+      const shape = cannon.mapper.toBox(geometry)
+      shape.material = this.materials.grind
+      this.body.addShape(shape, offset)
     }
 
     {
@@ -110,7 +121,9 @@ export class Skateboard {
         this.parts.truckBackCollision.position.y,
         this.parts.truckBackCollision.position.z
       )
-      this.body.addShape(cannon.mapper.toBox(geometry), offset)
+      const shape = cannon.mapper.toBox(geometry)
+      shape.material = this.materials.grind
+      this.body.addShape(shape, offset)
     }
 
     this.object = new Group()
@@ -142,14 +155,17 @@ export class Skateboard {
     this.#listen()
   }
 
+  setPosition(x: number, y: number, z: number) {
+    this.body.position.set(x, y, z)
+  }
+
   update(_delta: number) {
     this.object.position.copy(this.body.position)
     this.object.quaternion.copy(this.body.quaternion)
 
     for (let i = 0; i < this.raycast.wheelInfos.length; i++) {
-      const wheel = this.raycast.wheelInfos[i]
-
       this.raycast.updateWheelTransform(i)
+      const wheel = this.raycast.wheelInfos[i]
 
       const {position, quaternion} = this.wheels[i].object
 
@@ -166,9 +182,9 @@ export class Skateboard {
 
   reset() {
     this.body.velocity.set(0, 0, 0)
-    this.body.position.set(0, 22, -20)
+    this.body.position.set(45, 55, 353)
     this.body.quaternion.set(0, 0, 0, 1)
-    this.body.angularVelocity.set(0, 0, 0)
+    this.body.angularVelocity.set(0, 1, -0.4)
 
     this.raycast.wheelInfos.forEach((wheel) => {
       wheel.worldTransform.position.set(0, 0, 0)
@@ -186,6 +202,8 @@ export class Skateboard {
   }
 
   #onCollide = () => {
+    // console.log(event.contact.)
+
     if (!this.sound.collision.isPlaying) {
       this.sound.collision.play()
     }
@@ -266,7 +284,10 @@ export class Skateboard {
   }
 }
 
-export const loadSkateboard = async (listener: AudioListener) => {
+export const loadSkateboard = async (
+  listener: AudioListener,
+  materials: SkateboardMaterial
+) => {
   const loader = Loader.getInstance()
 
   const kick = await loader.audio.loadAsync('kick.mp3')
@@ -276,5 +297,5 @@ export const loadSkateboard = async (listener: AudioListener) => {
 
   const {scene} = await loader.gltf.loadAsync('skateboard.glb')
 
-  return new Skateboard(scene, sound)
+  return new Skateboard(scene, sound, materials)
 }

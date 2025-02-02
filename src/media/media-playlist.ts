@@ -4,6 +4,12 @@ export type MediaItem = [path: string, text: string]
 
 @define('media-playlist', 'select')
 export class MediaPlaylist extends HTMLSelectElement {
+  #shuffle = false
+
+  shuffle() {
+    this.#shuffle = !this.#shuffle
+  }
+
   constructor(public items: MediaItem[], public name = 'playlist') {
     super()
 
@@ -17,21 +23,18 @@ export class MediaPlaylist extends HTMLSelectElement {
   }
 
   next() {
-    if (this.selectedIndex < this.options.length - 1) {
-      this.selectedIndex++
+    if (this.#shuffle) {
+      this.selectedIndex = Math.floor(Math.random() * this.options.length)
     } else {
-      this.selectedIndex = 0
+      this.selectedIndex = (this.selectedIndex + 1) % this.options.length
     }
 
     this.dispatchEvent(new InputEvent('change'))
   }
 
   prev() {
-    if (this.selectedIndex >= 1) {
-      this.selectedIndex--
-    } else {
-      this.selectedIndex = this.options.length - 1
-    }
+    this.selectedIndex =
+      (this.selectedIndex - 1 + this.options.length) % this.options.length
 
     this.dispatchEvent(new InputEvent('change'))
   }

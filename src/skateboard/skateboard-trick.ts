@@ -4,10 +4,15 @@ import {Vec3} from 'cannon-es'
 import {Axis} from '../types'
 
 export class SkateboardTrick {
-  constructor(readonly name: string, private movement: SkateboardMovement) {}
+  #hasUpward: boolean
+
+  constructor(readonly name: string, private movement: SkateboardMovement) {
+    const {forces} = movement
+    this.#hasUpward = !!forces && forces.some((force) => !!force.y)
+  }
 
   execute(skateboard: Skateboard, meta: ActionMeta) {
-    if (skateboard.raycast.numWheelsOnGround) {
+    if (this.#hasUpward && skateboard.raycast.numWheelsOnGround) {
       skateboard.sound.kick.play()
     }
 
