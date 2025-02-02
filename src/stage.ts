@@ -2,9 +2,8 @@ import {Scene, Clock, DirectionalLight, HemisphereLight} from 'three'
 import {Camera, Controls, Follower, Renderer} from './core'
 import {ContactMaterial, Material, World} from 'cannon-es'
 import {Entity, Materials, Updatable} from './interfaces'
-import CannonDebugger from 'cannon-es-debugger'
+// import CannonDebugger from 'cannon-es-debugger'
 import {Skateboard} from './skateboard'
-import {MediaPlayer} from './media'
 import {Player} from './player'
 import {Day} from './scenario'
 
@@ -34,13 +33,12 @@ export class Stage {
     },
   }
 
-  debugger: ReturnType<typeof CannonDebugger>
+  // debugger: ReturnType<typeof CannonDebugger>
 
   constructor(
     container: HTMLElement,
     private env: Env,
     private skateboard: Skateboard,
-    private media: MediaPlayer,
     private player: Player
   ) {
     this.world.gravity.set(0, env.gravity, 0)
@@ -103,7 +101,7 @@ export class Stage {
     )
     this.world.addContactMaterial(skateSlideObstacleAngleIronContact)
 
-    this.debugger = CannonDebugger(this.scene, this.world)
+    // this.debugger = CannonDebugger(this.scene, this.world)
 
     this.renderer.render(this.scene, this.camera)
 
@@ -137,7 +135,7 @@ export class Stage {
   animate = () => {
     requestAnimationFrame(this.animate)
 
-    // if (player.actions.paused) return
+    if (this.player.actions.paused) return
 
     const delta = this.clock.getDelta()
 
@@ -145,7 +143,7 @@ export class Stage {
 
     this.skateboard.update(delta)
 
-    this.debugger.update()
+    // this.debugger.update()
 
     this.controls.update(delta)
 
