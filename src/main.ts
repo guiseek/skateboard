@@ -9,7 +9,6 @@ import {
 import './style.scss'
 
 providers().then(() => {
-  providers().then()
   const obstacle = use(OBSTACLES)
   const skateboard = use(SKATEBOARD)
   const tricks = use(SKATEBOARD_TRICKS)
